@@ -1,5 +1,12 @@
 import React from "react";
-import { View, StyleSheet, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  TouchableWithoutFeedback,
+} from "react-native";
+import * as Linking from "expo-linking";
+
 import Text from "./Text";
 import theme from "../../theme";
 const styles = StyleSheet.create({
@@ -42,19 +49,26 @@ const styles = StyleSheet.create({
   ratingContents: {
     textAlign: "center",
   },
+  link: {
+    flex: 1,
+  },
 });
 
-const RespositoryItem = ({ item }) => {
+const RespositoryItem = ({ item, url }) => {
   return (
     <View style={styles.container}>
       <View style={styles.personalDetails}>
         <Image style={styles.avatar} source={{ uri: item.ownerAvatarUrl }} />
         <View style={styles.details}>
-          <Text fontSize="subheading" fontWeight="bold">
+          <Text fontSize="subheading" fontWeight="bold" testID={item.id}>
             {item.fullName}
           </Text>
-          <Text color="textSecondary">{item.description}</Text>
-          <Text style={styles.languageBox}>{item.language}</Text>
+          <Text color="textSecondary" testID={item.id}>
+            {item.description}
+          </Text>
+          <Text style={styles.languageBox} testID={item.id}>
+            {item.language}
+          </Text>
         </View>
       </View>
       <View style={styles.ratings}>
@@ -63,8 +77,9 @@ const RespositoryItem = ({ item }) => {
             style={styles.ratingContents}
             fontSize="subheading"
             fontWeight="bold"
+            testID={item.id}
           >
-            {(item.forksCount / 1000).toFixed(1)}k
+            {(item.forksCount / 1000).toFixed(1).concat("k")}
           </Text>
           <Text style={styles.ratingContents} color="textSecondary">
             Forks
@@ -75,8 +90,9 @@ const RespositoryItem = ({ item }) => {
             style={styles.ratingContents}
             fontSize="subheading"
             fontWeight="bold"
+            testID={item.id}
           >
-            {(item.stargazersCount / 1000).toFixed(1)}k
+            {(item.stargazersCount / 1000).toFixed(1).concat("k")}
           </Text>
           <Text style={styles.ratingContents} color="textSecondary">
             Stars
@@ -87,6 +103,7 @@ const RespositoryItem = ({ item }) => {
             style={styles.ratingContents}
             fontSize="subheading"
             fontWeight="bold"
+            testID={item.id}
           >
             {item.ratingAverage}
           </Text>
@@ -95,7 +112,11 @@ const RespositoryItem = ({ item }) => {
           </Text>
         </View>
         <View>
-          <Text style={styles.ratingContents} fontWeight="bold">
+          <Text
+            style={styles.ratingContents}
+            fontWeight="bold"
+            testID={item.id}
+          >
             {item.reviewCount}
           </Text>
           <Text style={styles.ratingContents} color="textSecondary">
@@ -103,6 +124,25 @@ const RespositoryItem = ({ item }) => {
           </Text>
         </View>
       </View>
+      {url ? (
+        <TouchableWithoutFeedback
+          style={styles.link}
+          onPress={() => Linking.openURL(item.url)}
+        >
+          <Text
+            fontWeight="bold"
+            style={{
+              backgroundColor: theme.colors.primary,
+              borderRadius: 5,
+              color: "white",
+              padding: 10,
+              textAlign: "center",
+            }}
+          >
+            Open in GitHub
+          </Text>
+        </TouchableWithoutFeedback>
+      ) : null}
     </View>
   );
 };

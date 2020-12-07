@@ -6,10 +6,11 @@ import {
   ScrollView,
 } from "react-native";
 import Constants from "expo-constants";
+import { useHistory } from "react-router-dom";
 import Text from "./Text";
 import { Link } from "react-router-native";
 import { useQuery } from "@apollo/react-hooks";
-import { authoriedUser } from "../graphql/quries";
+import { GET_AUTHORIZED_USER } from "../graphql/quries";
 import AuthStorageContext from "../contexts/AuthStorageContext";
 import { useApolloClient } from "@apollo/client";
 const styles = StyleSheet.create({
@@ -26,10 +27,12 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
-  const { data, loading } = useQuery(authoriedUser);
+  const history = useHistory();
+  const { data, loading } = useQuery(GET_AUTHORIZED_USER);
   const authStorage = useContext(AuthStorageContext);
   const apolloClient = useApolloClient();
   const signOut = async () => {
+    history.push("/");
     await authStorage.removeAccessToken();
     apolloClient.resetStore();
   };
@@ -38,7 +41,6 @@ const AppBar = () => {
     user = null;
   } else {
     user = data.authorizedUser;
-    console.log(user);
   }
   return (
     <View style={styles.container}>
@@ -50,9 +52,16 @@ const AppBar = () => {
         </Link>
         {user ? (
           <>
-            <Text style={styles.text} fontSize="appbar" fontWeight="bold">
-              {user.username}
-            </Text>
+            <Link to="/createReview" component={TouchableWithoutFeedback}>
+              <Text style={styles.text} fontSize="appbar" fontWeight="bold">
+                Create Review
+              </Text>
+            </Link>
+            <Link to="/myReviews" component={TouchableWithoutFeedback}>
+              <Text style={styles.text} fontSize="appbar" fontWeight="bold">
+                My reviews
+              </Text>
+            </Link>
             <TouchableWithoutFeedback onPress={signOut}>
               <Text style={styles.text} fontSize="appbar" fontWeight="bold">
                 Sign Out
@@ -60,11 +69,18 @@ const AppBar = () => {
             </TouchableWithoutFeedback>
           </>
         ) : (
-          <Link to="/signIn" component={TouchableWithoutFeedback}>
-            <Text style={styles.text} fontSize="appbar" fontWeight="bold">
-              Sign In
-            </Text>
-          </Link>
+          <>
+            <Link to="/signIn" component={TouchableWithoutFeedback}>
+              <Text style={styles.text} fontSize="appbar" fontWeight="bold">
+                Sign In
+              </Text>
+            </Link>
+            <Link to="/signUp" component={TouchableWithoutFeedback}>
+              <Text style={styles.text} fontSize="appbar" fontWeight="bold">
+                Sign Up
+              </Text>
+            </Link>
+          </>
         )}
       </ScrollView>
     </View>
